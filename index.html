@@ -21,6 +21,11 @@
             overflow: hidden;
             text-align: center;
             padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        body.success-bg {
+            background: #ff477e !important;
         }
 
         .container {
@@ -33,6 +38,14 @@
             max-width: 500px;
             width: 100%;
             transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        .success-card-style {
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
         }
 
         h1 {
@@ -86,119 +99,115 @@
             z-index: 10;
         }
 
-        /* Success Screen Styles */
         .hidden {
             display: none !important;
         }
 
-        .success-gif {
+        /* Displays the cat video full screen or contained nicely */
+        .success-video {
             width: 100%;
-            max-width: 250px;
-            border-radius: 15px;
+            max-width: 280px;
+            border-radius: 25px;
             margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
-        /* Toast notifications for funny errors */
-        .toast {
+        .side-banner {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: rgba(255, 255, 255, 0.9);
+            bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
             color: #ff477e;
-            padding: 10px 20px;
+            padding: 14px 28px;
             border-radius: 30px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
             z-index: 100;
             pointer-events: none;
+            white-space: nowrap;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
+        .side-banner.hide-right {
+            transform: translateX(150vw);
+            opacity: 0;
+        }
+
+        .side-banner.show-center {
+            transform: translateX(0);
             opacity: 1;
+            left: auto;
         }
     </style>
 </head>
 <body>
 
-    <!-- Main Proposal Card -->
     <div id="proposal-card" class="container">
-        <!-- CHANGE THE NAME HERE -->
-        <h1>Will you forever be mine, [Partner's Name]? 🐻❤️</h1>
-        <!-- CHANGE YOUR NAME HERE -->
-        <p class="names">From: [Your Name] 💌</p>
+        <h1>Will you forever be mine? <br> Aastha 💕</h1>
+        <p class="names">From: Joydeep 💌</p>
         
         <div class="btn-container">
-            <button id="yes-btn">Yes 💖</button>
+            <button id="yes-btn">Yes 💞</button>
             <button id="no-btn">No 💔</button>
         </div>
     </div>
 
-    <!-- Success Card (Hidden by default) -->
-    <div id="success-card" class="container hidden">
-        <h1>Yay! I knew you'd say YES! 🥰❤️</h1>
-        <p style="color: white; margin-top: 10px;">You're the most amazing person I know. I love you endlessly.</p>
-        <!-- Cute cat GIF placeholder -->
-        <img class="success-gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z0cmRndmpxbXN0Y3N4dnd6b3M4M3R5N3Z0Y3N4dnd6b3M4M3R5ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/K1TtAsbIscM2gLSkT5/giphy.gif" alt="Cute Cat Celebration">
-        <p style="color: #ffeef8; font-style: italic; font-size: 0.9rem;">~ Your Forever Person ✨</p>
+    <div id="success-card" class="container success-card-style hidden">
+        <h1>Yay! I knew you'd say YES! 💕❤️</h1>
+        <p style="color: white; margin-top: 10px; font-size: 1.1rem;">You're the most amazing person I know. I love you endlessly.</p>
+        <p style="color: white; margin-top: 5px; font-size: 1.1rem; font-weight: bold;">~Joydeep</p>
+        
+        <video class="success-video" autoplay loop muted playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-cute-cat-licking-its-paw-40916-large.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 
-    <!-- Toast message overlay -->
-    <div id="toast" class="toast">Error 404: No button not found 🚫</div>
+    <div id="banner" class="side-banner hide-right">Lmao ok, try again 😂</div>
 
     <script>
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const proposalCard = document.getElementById('proposal-card');
         const successCard = document.getElementById('success-card');
-        const toast = document.getElementById('toast');
+        const banner = document.getElementById('banner');
+        const body = document.body;
 
-        // Array of funny responses like the video
         const funnyMessages = [
+            "Lmao ok, try again 😂",
+            "YUP! In this economy?? 😂",
             "Error 404: No button not found 🚫",
-            "I'll pretend I didn't see that 😂",
-            "LMAO ok, try again 😉",
-            "That's so funny haha. Now say yes. 🙄",
-            "Not an option, bubba! 💖",
-            "Access Denied 🔒"
+            "That's so funny haha. Now say yes. 🙄"
         ];
 
-        // Function to move the "No" button dynamically
         function moveButton(e) {
-            // Prevent default behavior on mobile touch
             if(e.type === 'touchstart') e.preventDefault();
 
-            const padding = 20;
-            // Generate random positions within the viewport boundaries
+            const padding = 40;
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
-            // Make sure coordinates stay positive and within screen bounds
             const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
             const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
             noBtn.style.left = `${randomX}px`;
             noBtn.style.top = `${randomY}px`;
 
-            // Trigger a random funny message alert
-            showToast();
+            triggerSideBanner();
         }
 
-        function showToast() {
-            const randomMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
-            toast.innerText = randomMessage;
-            toast.classList.add('show');
+        function triggerSideBanner() {
+            banner.classList.remove('show-center');
+            banner.classList.add('hide-right');
             
             setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+                const randomMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+                banner.innerText = randomMessage;
+                banner.classList.remove('hide-right');
+                banner.classList.add('show-center');
+            }, 50);
         }
 
-        // Event listeners for both desktop hover and mobile taps
         noBtn.addEventListener('mouseenter', moveButton);
         noBtn.addEventListener('touchstart', moveButton);
         noBtn.addEventListener('click', (e) => {
@@ -206,11 +215,18 @@
             moveButton(e);
         });
 
-        // Event listener for the "Yes" transition
         yesBtn.addEventListener('click', () => {
             proposalCard.classList.add('hidden');
             successCard.classList.remove('hidden');
-            toast.classList.remove('show');
+            banner.classList.remove('show-center');
+            banner.classList.add('hide-right');
+            body.classList.add('success-bg');
+            
+            // Auto play video safety check
+            const videoEl = document.querySelector('.success-video');
+            if(videoEl) {
+                videoEl.play().catch(error => console.log("Playback started"));
+            }
         });
     </script>
 </body>
