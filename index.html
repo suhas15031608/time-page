@@ -106,7 +106,7 @@
             gap: 20px;
             margin-top: 20px;
             position: relative;
-            min-height: 60px;
+            min-height: 120px; /* Increased height to give the No button room to roam close by */
         }
 
         button {
@@ -123,11 +123,16 @@
         #yes-btn {
             background-color: #ff477e;
             color: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
         }
 
         #yes-btn:hover {
             background-color: #ff2a65;
-            transform: scale(1.1);
+            transform: translate(-50%, -50%) scale(1.1);
         }
 
         #no-btn {
@@ -135,7 +140,7 @@
             color: #ff477e;
             position: absolute;
             z-index: 10;
-            transition: left 0.1s ease, top 0.1s ease;
+            transition: left 0.15s ease, top 0.15s ease;
         }
 
         .hidden {
@@ -221,7 +226,7 @@
         <h1>Will you forever be mine? <br> prarthana 💕</h1>
         <p class="names">From: suhas 💌</p>
         
-        <div class="btn-container">
+        <div class="btn-container" id="btn-container-box">
             <button id="yes-btn">Yes 💞</button>
             <button id="no-btn">No 💔</button>
         </div>
@@ -243,6 +248,7 @@
     <script>
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
+        const btnContainer = document.getElementById('btn-container-box');
         const proposalCard = document.getElementById('proposal-card');
         const successCard = document.getElementById('success-card');
         const banner = document.getElementById('banner');
@@ -259,12 +265,24 @@
             "That's so funny haha. Now say yes. 🙄"
         ];
 
+        // Position the No button to the right side of Yes button initially
+        function initButtons() {
+            const containerWidth = btnContainer.clientWidth;
+            const containerHeight = btnContainer.clientHeight;
+            
+            // Initial positioning side-by-side
+            noBtn.style.left = (containerWidth / 2 + 30) + 'px';
+            noBtn.style.top = (containerHeight / 2 - noBtn.offsetHeight / 2) + 'px';
+        }
+        window.addEventListener('load', initButtons);
+        window.addEventListener('resize', initButtons);
+
         function startMusic() {
             bgMusic.play().then(() => {
                 musicBtn.innerText = "🎵";
                 document.removeEventListener('click', startMusic);
                 document.removeEventListener('touchstart', startMusic);
-            }).catch(err => console.log("Audio playing setup"));
+            }).catch(err => console.log("Audio ready"));
         }
 
         document.addEventListener('click', startMusic);
@@ -305,16 +323,30 @@
             if(e.type === 'touchstart') e.preventDefault();
             startMusic();
 
-            // Calculate movement spaces limited inside the pink container card only
-            const containerWidth = proposalCard.clientWidth;
-            const containerHeight = proposalCard.clientHeight;
+            const containerWidth = btnContainer.clientWidth;
+            const containerHeight = btnContainer.clientHeight;
             
             const buttonWidth = noBtn.offsetWidth;
             const buttonHeight = noBtn.offsetHeight;
 
-            // Generate positions strictly limited to the inner boundaries of the box card
-            const randomX = Math.floor(Math.random() * (containerWidth - buttonWidth - 40)) + 20;
-            const randomY = Math.floor(Math.random() * (containerHeight - buttonHeight - 120)) + 80;
+            // Center coordinates of the Yes button inside the container
+            const centerX = containerWidth / 2;
+            const centerY = containerHeight / 2;
+
+            // Tight bounds: limit movement close to the Yes button area
+            const minX = Math.max(10, centerX - 110);
+            const maxX = Math.min(containerWidth - buttonWidth - 10, centerX + 110);
+            const minY = Math.max(10, centerY - 50);
+            const maxY = Math.min(containerHeight - buttonHeight - 10, centerY + 50);
+
+            let randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
+            let randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+            // Ensure it doesn't land perfectly on top of the Yes button center
+            if (Math.abs(randomX - (centerX - buttonWidth / 2)) < 30 && Math.abs(randomY - (centerY - buttonHeight / 2)) < 20) {
+                randomX += randomX < (centerX - buttonWidth / 2) ? -40 : 40;
+                randomY += randomY < (centerY - buttonHeight / 2) ? -30 : 30;
+            }
 
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
