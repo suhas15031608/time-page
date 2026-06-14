@@ -50,7 +50,7 @@
         }
 
         @keyframes fall {
-            0% {
+            0 {
                 transform: translateY(-20px) rotate(0deg);
                 opacity: 0;
             }
@@ -73,7 +73,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.2);
-            max-width: 500px;
+            max-width: 540px; /* Slightly widened card to give a larger gap */
             width: 100%;
             transition: all 0.5s ease;
             z-index: 2;
@@ -88,14 +88,14 @@
 
         h1 {
             color: white;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .names {
             color: #ffeef8;
-            font-size: 0.2rem;
+            font-size: 1.2rem;
             margin-bottom: 30px;
             font-weight: 600;
         }
@@ -106,7 +106,7 @@
             gap: 20px;
             margin-top: 20px;
             position: relative;
-            min-height: 120px; /* Increased height to give the No button room to roam close by */
+            min-height: 140px; /* Enhanced internal field spacing */
         }
 
         button {
@@ -243,7 +243,7 @@
         </video>
     </div>
 
-    <div id="banner" class="side-banner hide-right">ufff ok, try again 😂</div>
+    <div id="banner" class="side-banner hide-right">Lmao ok, try again 😂</div>
 
     <script>
         const noBtn = document.getElementById('no-btn');
@@ -265,13 +265,12 @@
             "That's so funny haha. Now say yes. 🙄"
         ];
 
-        // Position the No button to the right side of Yes button initially
+        // Position the No button with an explicit starting gap to the right
         function initButtons() {
             const containerWidth = btnContainer.clientWidth;
             const containerHeight = btnContainer.clientHeight;
             
-            // Initial positioning side-by-side
-            noBtn.style.left = (containerWidth / 2 + 30) + 'px';
+            noBtn.style.left = (containerWidth / 2 + 50) + 'px';
             noBtn.style.top = (containerHeight / 2 - noBtn.offsetHeight / 2) + 'px';
         }
         window.addEventListener('load', initButtons);
@@ -282,7 +281,7 @@
                 musicBtn.innerText = "🎵";
                 document.removeEventListener('click', startMusic);
                 document.removeEventListener('touchstart', startMusic);
-            }).catch(err => console.log("Audio ready"));
+            }).catch(err => console.log("Audio layout setup complete"));
         }
 
         document.addEventListener('click', startMusic);
@@ -329,23 +328,23 @@
             const buttonWidth = noBtn.offsetWidth;
             const buttonHeight = noBtn.offsetHeight;
 
-            // Center coordinates of the Yes button inside the container
+            // Center coordinate parameters of the Yes Button
             const centerX = containerWidth / 2;
             const centerY = containerHeight / 2;
 
-            // Tight bounds: limit movement close to the Yes button area
-            const minX = Math.max(20, centerX - 210);
-            const maxX = Math.min(containerWidth - buttonWidth - 20, centerX + 210);
-            const minY = Math.max(20, centerY - 60);
-            const maxY = Math.min(containerHeight - buttonHeight - 20, centerY + 60);
+            // Expanded outer coordinates to ensure a prominent, forced distance gap
+            const minX = 15;
+            const maxX = containerWidth - buttonWidth - 15;
+            const minY = 15;
+            const maxY = containerHeight - buttonHeight - 15;
 
             let randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
             let randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
 
-            // Ensure it doesn't land perfectly on top of the Yes button center
-            if (Math.abs(randomX - (centerX - buttonWidth / 2)) < 30 && Math.abs(randomY - (centerY - buttonHeight / 2)) < 20) {
-                randomX += randomX < (centerX - buttonWidth / 2) ? -30 : 50;
-                randomY += randomY < (centerY - buttonHeight / 2) ? -30 : 30;
+            // Enforce distance: If choice falls too close horizontally, push it out to the outer edges
+            const currentCenterDistanceX = Math.abs(randomX - (centerX - buttonWidth / 2));
+            if (currentCenterDistanceX < 75) {
+                randomX = randomX < (centerX - buttonWidth / 2) ? minX + 10 : maxX - 10;
             }
 
             noBtn.style.left = randomX + 'px';
