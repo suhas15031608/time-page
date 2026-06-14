@@ -133,8 +133,10 @@
         #no-btn {
             background-color: #ffffff;
             color: #ff477e;
-            position: absolute;
-            z-index: 10;
+            /* Fixed position so it roams globally without breaking layout */
+            position: fixed; 
+            z-index: 999;
+            transition: left 0.15s ease, top 0.15s ease;
         }
 
         .hidden {
@@ -208,12 +210,15 @@
 </head>
 <body>
 
+    <!-- Background audio setup -->
     <audio id="bg-music" loop preload="auto">
         <source src="bgm.mp3.mpeg" type="audio/mpeg">
     </audio>
 
+    <!-- Floating music switch icon -->
     <div id="music-btn" class="music-toggle">🎵</div>
 
+    <!-- Background container for the falling hearts effect -->
     <div class="hearts-container" id="hearts-container"></div>
 
     <div id="proposal-card" class="container">
@@ -229,7 +234,7 @@
     <div id="success-card" class="container success-card-style hidden">
         <h1>Yay! I knew you'd say YES! 💕❤️</h1>
         <p style="color: white; margin-top: 10px; font-size: 1.1rem;">You're the most amazing person I know. I love you endlessly.</p>
-        <p style="color: white; margin-top: 5px; font-size: 1.1rem; font-weight: bold;">~suhas</p>
+        <p style="color: white; margin-top: 5px; font-size: 1.1rem; font-weight: bold;">suhas</p>
         
         <video class="success-video" autoplay loop muted playsinline preload="auto">
             <source src="cat.mp4" type="video/mp4">
@@ -239,7 +244,7 @@
 
     <div id="banner" class="side-banner hide-right">Lmao ok, try again 😂</div>
 
-    <script {nonce}>
+    <script>
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const proposalCard = document.getElementById('proposal-card');
@@ -257,6 +262,14 @@
             "Error 404: No button not found 🚫",
             "That's so funny haha. Now say yes. 🙄"
         ];
+
+        // Ensure button starts in its default layout position visually
+        function initButtonPosition() {
+            const rect = noBtn.getBoundingClientRect();
+            noBtn.style.left = rect.left + 'px';
+            noBtn.style.top = rect.top + 'px';
+        }
+        window.addEventListener('load', initButtonPosition);
 
         function startMusic() {
             bgMusic.play().then(() => {
@@ -304,19 +317,31 @@
             if(e.type === 'touchstart') e.preventDefault();
             startMusic();
 
-            // Set up a boundary padding to keep it away from extreme edges
-            const padding = 50;
+            const buttonWidth = noBtn.offsetWidth;
+            const buttonHeight = noBtn.offsetHeight;
+
+            // Safe padding margins to keep it well within the screen edges
+            const padding = 60; 
             
-            // Calculate maximum available space within the current browser screen boundary
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            // Calculate exact viewport room limits 
+            const maxX = window.innerWidth - buttonWidth - padding;
+            const maxY = window.innerHeight - buttonHeight - padding;
 
-            // Generate positions strictly within the screen boundary box
-            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            // Generate totally random global coordinates
+            let randomX = Math.floor(Math.random() * (maxX - padding)) + padding;
+            let randomY = Math.floor(Math.random() * (maxY - padding)) + padding;
 
-            noBtn.style.left = `${randomX}px`;
-            noBtn.style.top = `${randomY}px`;
+            // Prevent it from hiding under the middle proposal card on first few clicks
+            const card = proposalCard.getBoundingClientRect();
+            if (randomX > card.left - 40 && randomX < card.right + 40 &&
+                randomY > card.top - 40 && randomY < card.bottom + 40) {
+                // If it hits the middle box area, throw it far to an outer quadrant edge
+                randomX = Math.random() > 0.5 ? padding : maxX;
+                randomY = Math.random() > 0.5 ? padding : maxY;
+            }
+
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
 
             triggerSideBanner();
         }
@@ -344,6 +369,7 @@
             startMusic();
             proposalCard.classList.add('hidden');
             successCard.classList.remove('hidden');
+            noBtn.classList.add('hidden'); // Fully hides No button upon saying Yes
             banner.classList.remove('show-center');
             banner.classList.add('hide-right');
             body.classList.add('success-bg');
