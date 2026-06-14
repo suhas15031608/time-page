@@ -88,14 +88,14 @@
 
         h1 {
             color: white;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .names {
             color: #ffeef8;
-            font-size: 1.2rem;
+            font-size: 0.2rem;
             margin-bottom: 30px;
             font-weight: 600;
         }
@@ -243,7 +243,7 @@
         </video>
     </div>
 
-    <div id="banner" class="side-banner hide-right">Lmao ok, try again 😂</div>
+    <div id="banner" class="side-banner hide-right">ufff ok, try again 😂</div>
 
     <script>
         const noBtn = document.getElementById('no-btn');
@@ -334,17 +334,17 @@
             const centerY = containerHeight / 2;
 
             // Tight bounds: limit movement close to the Yes button area
-            const minX = Math.max(10, centerX - 110);
-            const maxX = Math.min(containerWidth - buttonWidth - 10, centerX + 110);
-            const minY = Math.max(10, centerY - 50);
-            const maxY = Math.min(containerHeight - buttonHeight - 10, centerY + 50);
+            const minX = Math.max(20, centerX - 210);
+            const maxX = Math.min(containerWidth - buttonWidth - 20, centerX + 210);
+            const minY = Math.max(20, centerY - 60);
+            const maxY = Math.min(containerHeight - buttonHeight - 20, centerY + 60);
 
             let randomX = Math.floor(Math.random() * (maxX - minX)) + minX;
             let randomY = Math.floor(Math.random() * (maxY - minY)) + minY;
 
             // Ensure it doesn't land perfectly on top of the Yes button center
             if (Math.abs(randomX - (centerX - buttonWidth / 2)) < 30 && Math.abs(randomY - (centerY - buttonHeight / 2)) < 20) {
-                randomX += randomX < (centerX - buttonWidth / 2) ? -40 : 40;
+                randomX += randomX < (centerX - buttonWidth / 2) ? -30 : 50;
                 randomY += randomY < (centerY - buttonHeight / 2) ? -30 : 30;
             }
 
