@@ -209,7 +209,7 @@
 <body>
 
     <audio id="bg-music" loop preload="auto">
-        <source src="Bgm.mp3" type="audio/mpeg">
+        <source src="bgm.mp3.mpeg" type="audio/mpeg">
     </audio>
 
     <div id="music-btn" class="music-toggle">🎵</div>
@@ -239,7 +239,7 @@
 
     <div id="banner" class="side-banner hide-right">Lmao ok, try again 😂</div>
 
-    <script>
+    <script {nonce}>
         const noBtn = document.getElementById('no-btn');
         const yesBtn = document.getElementById('yes-btn');
         const proposalCard = document.getElementById('proposal-card');
@@ -258,23 +258,19 @@
             "That's so funny haha. Now say yes. 🙄"
         ];
 
-        // Function to start music safely upon initial interaction
         function startMusic() {
             bgMusic.play().then(() => {
                 musicBtn.innerText = "🎵";
-                // Remove initial interaction triggers once playing successfully
                 document.removeEventListener('click', startMusic);
                 document.removeEventListener('touchstart', startMusic);
-            }).catch(err => console.log("Audio waiting for absolute user interaction focus"));
+            }).catch(err => console.log("Audio waiting for interaction"));
         }
 
-        // Add auto-trigger event listeners for mobile devices/desktops
         document.addEventListener('click', startMusic);
         document.addEventListener('touchstart', startMusic);
 
-        // Manual play/pause control button logic
         musicBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevents triggering startMusic loop again
+            e.stopPropagation();
             if (bgMusic.paused) {
                 bgMusic.play();
                 musicBtn.innerText = "🎵";
@@ -284,7 +280,6 @@
             }
         });
 
-        // Function to dynamically generate falling hearts background
         function createFallingHeart() {
             const heart = document.createElement('div');
             heart.classList.add('falling-heart');
@@ -307,12 +302,16 @@
 
         function moveButton(e) {
             if(e.type === 'touchstart') e.preventDefault();
-            startMusic(); // Fallback trigger execution
+            startMusic();
 
-            const padding = 40;
+            // Set up a boundary padding to keep it away from extreme edges
+            const padding = 50;
+            
+            // Calculate maximum available space within the current browser screen boundary
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
+            // Generate positions strictly within the screen boundary box
             const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
             const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
@@ -342,7 +341,7 @@
         });
 
         yesBtn.addEventListener('click', () => {
-            startMusic(); // Fallback trigger execution
+            startMusic();
             proposalCard.classList.add('hidden');
             successCard.classList.remove('hidden');
             banner.classList.remove('show-center');
